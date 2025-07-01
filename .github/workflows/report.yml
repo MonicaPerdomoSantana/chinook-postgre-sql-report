@@ -1,4 +1,4 @@
-name: Generar reporte Supabase
+name: Generar reportes desde Supabase
 
 on:
   push:
@@ -6,41 +6,40 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-sql:
+  generar-reportes:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Clonar el repo
+        uses: actions/checkout@v3
 
-      - name: Instalar psql
+      - name: Instalar PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-      - name: Ejecutar scripts SQL
+      - name: Crear carpeta de reportes
+        run: mkdir -p reports
+
+      - name: Ejecutar consultas SQL y guardar como CSV
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          DB_URI: ${{ secrets.SUPABASE_DB_URI }}
         run: |
-          export PGSSLMODE=require
-          export PGPASSWORD=$PGPASSWORD
-          mkdir -p reports
           for f in sql/*.sql; do
-            echo "======== Resultado para $f ========"
-            psql -h db.zpmjgwsnoetnxowccjmx.supabase.co \
-                -p 5432 \
-                -d postgres \
-                -U postgres \
-                -c "\i $f" --csv | tee "reports/$(basename "$f" .sql).csv"
+            nombre=$(basename "$f" .sql)
+            echo "Procesando $nombre.sql..."
+            psql "$DB_URI?sslmode=require" \
+              --csv \
+              -f "$f" > "reports/$nombre.csv"
           done
 
-      - name: Commit y push reporte
+      - name: Commit y push de reportes
         uses: EndBug/add-and-commit@v9
         with:
-          author_name: "github-actions[bot]"
-          author_email: "github-actions[bot]@users.noreply.github.com"
-          message: "Actualizar reportes"
+          message: "Actualizar reportes CSV"
           add: "reports/*.csv"
+          author_name: "GitHub Action"
+          author_email: "action@github.com"
 
-  deploy-pages:
-    needs: run-sql
+  publicar-gh-pages:
+    needs: generar-reportes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

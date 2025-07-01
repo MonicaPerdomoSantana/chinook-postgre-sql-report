@@ -1,0 +1,1 @@
+SELECT country, COUNT(customer_id) FROM customer GROUP BY country

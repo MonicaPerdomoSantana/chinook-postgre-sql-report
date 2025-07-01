@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Reportes Chinook</title>
+  <title>Reportes automáticos (Supabase)</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <style>
     body { font-family: sans-serif; padding: 2rem; background: #f9f9f9; }
@@ -11,70 +11,80 @@
   </style>
 </head>
 <body>
-  <h1>📊 Reportes de Chinook (Supabase)</h1>
-
-  <div class="report" id="artist_with_most_albums"></div>
-  <div class="report" id="track_count_per_album"></div>
+  <h1>📊 Reportes generados automáticamente</h1>
+  <div id="contenedor-reportes"></div>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
   <script>
-    const reports = [
-      { file: "artist_with_most_albums.csv", title: "🎤 Artista con más álbumes" },
-      { file: "track_count_per_album.csv", title: "🎶 Nº de canciones por álbum" }
-    ];
+    const usuario = 'MonicaPerdomoSantana';
+    const repositorio = 'chinook-postgre-sql-report';
+    const rama = 'gh-pages';
 
-    reports.forEach(report => {
-      fetch(report.file)
-        .then(resp => resp.text())
-        .then(csv => {
-          const parsed = Papa.parse(csv, { header: true });
-          const container = document.getElementById(report.file.replace('.csv', ''));
-          const tableId = 'table_' + report.file.replace('.csv', '');
+    async function cargarCSVs() {
+      const apiUrl = `https://api.github.com/repos/${usuario}/${repositorio}/contents/?ref=${rama}`;
+      const respuesta = await fetch(apiUrl);
+      const archivos = await respuesta.json();
 
-          // Título
-          const h2 = document.createElement("h2");
-          h2.textContent = report.title;
-          container.appendChild(h2);
+      const contenedor = document.getElementById('contenedor-reportes');
 
-          // Tabla
-          const table = document.createElement("table");
-          table.id = tableId;
-          table.className = "display";
-          container.appendChild(table);
+      archivos
+        .filter(item => item.name.endsWith('.csv'))
+        .forEach(async item => {
+          const nombre = item.name.replace('.csv', '');
+          const urlCSV = item.download_url;
 
-          // Insertar encabezado y datos
-          const thead = document.createElement("thead");
-          const tbody = document.createElement("tbody");
+          const respuestaCSV = await fetch(urlCSV);
+          const textoCSV = await respuestaCSV.text();
+          const datos = Papa.parse(textoCSV, { header: true });
 
-          if (parsed.data.length > 0) {
-            const headers = Object.keys(parsed.data[0]);
-            const trHead = document.createElement("tr");
-            headers.forEach(col => {
-              const th = document.createElement("th");
-              th.textContent = col;
-              trHead.appendChild(th);
+          const seccion = document.createElement('div');
+          seccion.className = 'report';
+
+          const titulo = document.createElement('h2');
+          titulo.textContent = `📁 ${nombre}`;
+          seccion.appendChild(titulo);
+
+          const tabla = document.createElement('table');
+          tabla.id = `tabla_${nombre}`;
+          tabla.className = 'display';
+          seccion.appendChild(tabla);
+          contenedor.appendChild(seccion);
+
+          const thead = document.createElement('thead');
+          const tbody = document.createElement('tbody');
+
+          if (datos.data.length > 0) {
+            const headers = Object.keys(datos.data[0]);
+
+            const filaCabecera = document.createElement('tr');
+            headers.forEach(h => {
+              const th = document.createElement('th');
+              th.textContent = h;
+              filaCabecera.appendChild(th);
             });
-            thead.appendChild(trHead);
+            thead.appendChild(filaCabecera);
 
-            parsed.data.forEach(row => {
-              const tr = document.createElement("tr");
-              headers.forEach(col => {
-                const td = document.createElement("td");
-                td.textContent = row[col];
+            datos.data.forEach(row => {
+              const tr = document.createElement('tr');
+              headers.forEach(h => {
+                const td = document.createElement('td');
+                td.textContent = row[h];
                 tr.appendChild(td);
               });
               tbody.appendChild(tr);
             });
 
-            table.appendChild(thead);
-            table.appendChild(tbody);
-            $(`#${tableId}`).DataTable();
+            tabla.appendChild(thead);
+            tabla.appendChild(tbody);
+            $(`#tabla_${nombre}`).DataTable();
           }
         });
-    });
+    }
+
+    cargarCSVs();
   </script>
 </body>
 </html>

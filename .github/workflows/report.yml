@@ -1,5 +1,8 @@
 name: Run SQL and Publish Reports
 
+permissions:
+  contents: write
+
 on:
   push:
     paths:

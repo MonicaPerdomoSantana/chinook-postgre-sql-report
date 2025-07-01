@@ -24,19 +24,19 @@ jobs:
           for f in sql/*.sql; do
             echo "======== Resultado para $f ========"
             psql -h "$(echo $SUPABASE_URL | awk -F[/:] '{print $4}')" \
-                -U "$SUPABASE_ANON_KEY" \
-                -d "$(echo $SUPABASE_URL | awk -F/ '{print $NF}')" \
-                -c "\i $f" \
-                --csv | tee "reports/$(basename "$f" .sql).csv"
+                 -U "$SUPABASE_ANON_KEY" \
+                 -d "$(echo $SUPABASE_URL | awk -F/ '{print $NF}')" \
+                 -c "\i $f" \
+                 --csv > "reports/$(basename $f .sql).csv"
           done
 
       - name: Commit y push reporte
         uses: EndBug/add-and-commit@v9
         with:
-          author_name: "github-actions[bot]"
-          author_email: "github-actions[bot]@users.noreply.github.com"
-          message: "Actualizar reportes"
-          add: "reports/*.csv"
+          author_name: 'github-actions[bot]'
+          author_email: 'github-actions[bot]@users.noreply.github.com'
+          message: 'Actualizar reportes'
+          add: 'reports/*.csv'
 
   deploy-pages:
     needs: run-sql

@@ -3,7 +3,7 @@ name: Run SQL and Publish Reports
 on:
   push:
     paths:
-      - 'sql/**'
+      - "sql/**"
   workflow_dispatch:
 
 jobs:
@@ -26,8 +26,7 @@ jobs:
           for sqlfile in sql/*.sql; do
             csvfile="reports/$(basename "${sqlfile}" .sql).csv"
             echo "Ejecutando $sqlfile y guardando en $csvfile"
-            PGPASSWORD=$(echo $DB_URI | sed -n 's#.*postgres:\([^@]*\)@.*#\1#p') \
-            psql "$DB_URI" -f "$sqlfile" -A -F"," --no-align -o "$csvfile"
+            psql -d "$DB_URI" -f "$sqlfile" -A -F"," --no-align -o "$csvfile"
           done
 
       - name: Deploy reports to GitHub Pages

@@ -23,8 +23,10 @@ jobs:
         run: mkdir -p reports
 
       - name: Ejecutar scripts SQL y exportar CSVs
+        env:
+          DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
-          export PGPASSWORD='${{ secrets.SUPABASE_DB_PASSWORD }}'
+          export PGPASSWORD='$DB_PASSWORD'
           export PGHOST=aws-0-eu-west-3.pooler.supabase.com
           export PGPORT=6543
           export PGUSER=postgres.zpmjgwsnoetnxowccjmx

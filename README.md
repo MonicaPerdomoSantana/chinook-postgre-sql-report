@@ -9,6 +9,12 @@ This project automates the execution of SQL scripts against the [Chinook](https:
 - Saves query results as `.csv` files in a `reports/` folder
 - Automatically publishes reports to GitHub Pages after every push
 
+## 🚀 Live Reports
+
+You can view the latest generated reports here:
+
+👉 [GitHub Pages — Reports](https://monicaperdomosantana.github.io/chinook-postgre-sql-report/)
+
 ## 🔧 Tech Stack
 
 - PostgreSQL 17 (Supabase)
@@ -32,12 +38,6 @@ This project automates the execution of SQL scripts against the [Chinook](https:
 │ └── ...
 ├── index.html
 ```
-
-## 🚀 Live Reports
-
-You can view the latest generated reports here:
-
-👉 [GitHub Pages — Reports](https://monicaperdomosantana.github.io/chinook-postgre-sql-report/)
 
 ## 🔐 Secrets & Configuration
 

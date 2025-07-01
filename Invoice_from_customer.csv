@@ -1,0 +1,9 @@
+invoice_id,customer_id,invoice_date,billing_address,billing_city,billing_state,billing_country,billing_postal_code,total
+25,10,2021-04-09 00:00:00,Rua Dr. Falcão Filho, 155,São Paulo,SP,Brazil,01007-010,8.91
+154,10,2022-11-14 00:00:00,Rua Dr. Falcão Filho, 155,São Paulo,SP,Brazil,01007-010,1.98
+177,10,2023-02-16 00:00:00,Rua Dr. Falcão Filho, 155,São Paulo,SP,Brazil,01007-010,3.96
+199,10,2023-05-21 00:00:00,Rua Dr. Falcão Filho, 155,São Paulo,SP,Brazil,01007-010,5.94
+251,10,2024-01-09 00:00:00,Rua Dr. Falcão Filho, 155,São Paulo,SP,Brazil,01007-010,0.99
+372,10,2025-07-02 00:00:00,Rua Dr. Falcão Filho, 155,São Paulo,SP,Brazil,01007-010,1.98
+383,10,2025-08-12 00:00:00,Rua Dr. Falcão Filho, 155,São Paulo,SP,Brazil,01007-010,13.86
+(7 rows)

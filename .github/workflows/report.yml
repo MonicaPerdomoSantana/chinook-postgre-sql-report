@@ -21,6 +21,7 @@ jobs:
         run: |
           export PGSSLMODE=require
           export PGPASSWORD=$SUPABASE_ANON_KEY
+          mkdir -p reports
           for f in sql/*.sql; do
             echo "======== Resultado para $f ========"
             psql -h "$(echo $SUPABASE_URL | awk -F[/:] '{print $4}')" \

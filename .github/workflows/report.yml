@@ -20,13 +20,18 @@ jobs:
         run: mkdir -p reports
 
       - name: Run SQL scripts and export CSVs
-        env:
-          DB_URI: ${{ secrets.SUPABASE_DB_URI }}
         run: |
+          DB_URI="postgresql://postgres:admin@db.zpmjgwsnoetnxowccjmx.supabase.co:5432/postgres"
+          export PGPASSWORD=admin
+          export PGHOST=db.zpmjgwsnoetnxowccjmx.supabase.co
+          export PGPORT=5432
+          export PGUSER=postgres
+          export PGDATABASE=postgres
+
           for sqlfile in sql/*.sql; do
             csvfile="reports/$(basename "${sqlfile}" .sql).csv"
             echo "Ejecutando $sqlfile y guardando en $csvfile"
-            psql -d "$DB_URI" -f "$sqlfile" -A -F"," --no-align -o "$csvfile"
+            psql -f "$sqlfile" -A -F"," --no-align -o "$csvfile"
           done
 
       - name: Deploy reports to GitHub Pages

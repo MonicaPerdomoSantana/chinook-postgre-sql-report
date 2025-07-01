@@ -22,10 +22,11 @@ jobs:
         env:
           DB_URI: ${{ secrets.SUPABASE_DB_URI }}
         run: |
+          mkdir -p reports
           for f in sql/*.sql; do
             nombre=$(basename "$f" .sql)
             echo "Procesando $nombre.sql..."
-            psql "$DB_URI?sslmode=require" \
+            psql "${DB_URI}?sslmode=require" \
               --csv \
               -f "$f" > "reports/$nombre.csv"
           done

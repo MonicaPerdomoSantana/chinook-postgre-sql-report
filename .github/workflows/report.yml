@@ -24,7 +24,7 @@ jobs:
 
       - name: Ejecutar scripts SQL y exportar CSVs
         run: |
-          export PGPASSWORD='kfSUeCT&82NqS38'
+          export PGPASSWORD='${{ secrets.SUPABASE_DB_PASSWORD }}'
           export PGHOST=aws-0-eu-west-3.pooler.supabase.com
           export PGPORT=6543
           export PGUSER=postgres.zpmjgwsnoetnxowccjmx

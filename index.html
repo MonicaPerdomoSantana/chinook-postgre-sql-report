@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reportes Chinook</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f9f9f9; }
+    h1 { font-size: 2rem; }
+    .report { margin-bottom: 3rem; }
+  </style>
+</head>
+<body>
+  <h1>📊 Reportes de Chinook (Supabase)</h1>
+
+  <div class="report" id="artist_with_most_albums"></div>
+  <div class="report" id="track_count_per_album"></div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <script>
+    const reports = [
+      { file: "artist_with_most_albums.csv", title: "🎤 Artista con más álbumes" },
+      { file: "track_count_per_album.csv", title: "🎶 Nº de canciones por álbum" }
+    ];
+
+    reports.forEach(report => {
+      fetch(report.file)
+        .then(resp => resp.text())
+        .then(csv => {
+          const parsed = Papa.parse(csv, { header: true });
+          const container = document.getElementById(report.file.replace('.csv', ''));
+          const tableId = 'table_' + report.file.replace('.csv', '');
+
+          // Título
+          const h2 = document.createElement("h2");
+          h2.textContent = report.title;
+          container.appendChild(h2);
+
+          // Tabla
+          const table = document.createElement("table");
+          table.id = tableId;
+          table.className = "display";
+          container.appendChild(table);
+
+          // Insertar encabezado y datos
+          const thead = document.createElement("thead");
+          const tbody = document.createElement("tbody");
+
+          if (parsed.data.length > 0) {
+            const headers = Object.keys(parsed.data[0]);
+            const trHead = document.createElement("tr");
+            headers.forEach(col => {
+              const th = document.createElement("th");
+              th.textContent = col;
+              trHead.appendChild(th);
+            });
+            thead.appendChild(trHead);
+
+            parsed.data.forEach(row => {
+              const tr = document.createElement("tr");
+              headers.forEach(col => {
+                const td = document.createElement("td");
+                td.textContent = row[col];
+                tr.appendChild(td);
+              });
+              tbody.appendChild(tr);
+            });
+
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            $(`#${tableId}`).DataTable();
+          }
+        });
+    });
+  </script>
+</body>
+</html>

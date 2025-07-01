@@ -38,6 +38,9 @@ jobs:
             psql -f "$sqlfile" -A -F"," --no-align -o "$csvfile"
           done
 
+      - name: Copiar index.html a reports
+        run: cp index.html reports/
+
       - name: Publicar reports en GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:

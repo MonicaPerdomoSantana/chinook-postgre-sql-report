@@ -1,1 +1,1 @@
-SELECT  customer_id, SUM(total)FROM invoice GROUP BY customer_id ORDER BY SUM(total) desc
+SELECT  customer_id,first_name,last_name, SUM(total)FROM invoice GROUP BY customer_id,first_name,last_name ORDER BY SUM(total) descs

@@ -1,1 +1,1 @@
-SELECT artist_id,COUNT (album_id) from album GROUP BY artist_id ORDER BY COUNT(album_id) DESC LIMIT 1
+SELECT artist_id,name,COUNT (album_id) from album GROUP BY artist_id,name ORDER BY COUNT(album_id) DESC LIMIT 1

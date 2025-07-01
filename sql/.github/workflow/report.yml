@@ -3,6 +3,7 @@ name: Generar reporte Supabase
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   run-sql:

@@ -17,27 +17,27 @@ jobs:
       - name: Ejecutar scripts SQL
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.ANON_KEY }}
+          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           export PGSSLMODE=require
-          export PGPASSWORD=$SUPABASE_ANON_KEY
+          export PGPASSWORD=$PGPASSWORD
           mkdir -p reports
           for f in sql/*.sql; do
             echo "======== Resultado para $f ========"
-            psql -h "$(echo $SUPABASE_URL | awk -F[/:] '{print $4}')" \
-                 -U "$SUPABASE_ANON_KEY" \
-                 -d "$(echo $SUPABASE_URL | awk -F/ '{print $NF}')" \
-                 -c "\i $f" \
-                 --csv > "reports/$(basename $f .sql).csv"
+            psql -h db.zpmjgwsnoetnxowccjmx.supabase.co \
+                -p 5432 \
+                -d postgres \
+                -U postgres \
+                -c "\i $f" --csv | tee "reports/$(basename "$f" .sql).csv"
           done
 
       - name: Commit y push reporte
         uses: EndBug/add-and-commit@v9
         with:
-          author_name: 'github-actions[bot]'
-          author_email: 'github-actions[bot]@users.noreply.github.com'
-          message: 'Actualizar reportes'
-          add: 'reports/*.csv'
+          author_name: "github-actions[bot]"
+          author_email: "github-actions[bot]@users.noreply.github.com"
+          message: "Actualizar reportes"
+          add: "reports/*.csv"
 
   deploy-pages:
     needs: run-sql

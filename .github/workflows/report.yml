@@ -1,52 +1,38 @@
-name: Generar reportes desde Supabase
+name: Run SQL and Publish Reports
 
 on:
   push:
-    branches: [main]
+    paths:
+      - 'sql/**'
   workflow_dispatch:
 
 jobs:
-  generar-reportes:
+  run-sql:
     runs-on: ubuntu-latest
     steps:
-      - name: Clonar el repo
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Instalar PostgreSQL client
+      - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-      - name: Crear carpeta de reportes
+      - name: Create reports folder
         run: mkdir -p reports
 
-      - name: Ejecutar consultas SQL y guardar como CSV
+      - name: Run SQL scripts and export CSVs
         env:
           DB_URI: ${{ secrets.SUPABASE_DB_URI }}
         run: |
-          mkdir -p reports
-          for f in sql/*.sql; do
-            nombre=$(basename "$f" .sql)
-            echo "Procesando $nombre.sql..."
-            psql "${DB_URI}?sslmode=require" \
-              --csv \
-              -f "$f" > "reports/$nombre.csv"
+          for sqlfile in sql/*.sql; do
+            csvfile="reports/$(basename "${sqlfile}" .sql).csv"
+            echo "Ejecutando $sqlfile y guardando en $csvfile"
+            PGPASSWORD=$(echo $DB_URI | sed -n 's#.*postgres:\([^@]*\)@.*#\1#p') \
+            psql "$DB_URI" -f "$sqlfile" -A -F"," --no-align -o "$csvfile"
           done
 
-      - name: Commit y push de reportes
-        uses: EndBug/add-and-commit@v9
-        with:
-          message: "Actualizar reportes CSV"
-          add: "reports/*.csv"
-          author_name: "GitHub Action"
-          author_email: "action@github.com"
-
-  publicar-gh-pages:
-    needs: generar-reportes
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Publicar en GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Deploy reports to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./reports
+          publish_branch: gh-pages

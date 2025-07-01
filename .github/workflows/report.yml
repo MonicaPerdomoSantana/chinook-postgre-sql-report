@@ -13,19 +13,18 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Install PostgreSQL client
+      - name: Instalar cliente PostgreSQL
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-      - name: Create reports folder
+      - name: Crear carpeta reports
         run: mkdir -p reports
 
-      - name: Run SQL scripts and export CSVs
+      - name: Ejecutar scripts SQL y exportar CSVs
         run: |
-          DB_URI="postgresql://postgres:admin@db.zpmjgwsnoetnxowccjmx.supabase.co:5432/postgres"
           export PGPASSWORD=admin
-          export PGHOST=db.zpmjgwsnoetnxowccjmx.supabase.co
-          export PGPORT=5432
-          export PGUSER=postgres
+          export PGHOST=aws-0-eu-west-3.pooler.supabase.com
+          export PGPORT=6543
+          export PGUSER=postgres.zpmjgwsnoetnxowccjmx
           export PGDATABASE=postgres
 
           for sqlfile in sql/*.sql; do
@@ -34,7 +33,7 @@ jobs:
             psql -f "$sqlfile" -A -F"," --no-align -o "$csvfile"
           done
 
-      - name: Deploy reports to GitHub Pages
+      - name: Publicar reports en GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

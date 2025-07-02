@@ -1,2 +1,2 @@
--- 19 Playlists with more than 50 tracks
+SELECT playlist_id,COUNT (*) FROM playlist_track GROUP BY playlist_id HAVING COUNT (*) >50
 

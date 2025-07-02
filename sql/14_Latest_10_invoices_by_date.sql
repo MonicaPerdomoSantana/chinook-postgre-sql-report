@@ -1,2 +1,2 @@
--- 14 Latest 10 invoices by date
+SELECT invoice_id, invoice_date FROM invoice ORDER BY invoice_date DESC LIMIT 10
 

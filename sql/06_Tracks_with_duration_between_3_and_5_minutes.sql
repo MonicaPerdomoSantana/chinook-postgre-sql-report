@@ -1,2 +1,2 @@
--- 06 Tracks with duration between 3 and 5 minutes
+SELECT name, milliseconds FROM track WHERE milliseconds BETWEEN 180000 AND 300000 ORDER BY milliseconds;
 

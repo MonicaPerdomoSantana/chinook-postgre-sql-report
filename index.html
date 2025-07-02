@@ -43,6 +43,7 @@
 
         archivos
           .filter((item) => item.name.endsWith(".csv"))
+          .sort((a, b) => a.name.localeCompare(b.name))
           .forEach(async (item) => {
             const nombre = item.name.replace(".csv", "");
             const urlCSV = item.download_url;

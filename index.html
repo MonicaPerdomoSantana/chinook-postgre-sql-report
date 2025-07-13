@@ -1,103 +1,102 @@
-creo que depoende de la velcidad de descarga?
 <!DOCTYPE html>
 <html lang="es">
-   <head>
-      <meta charset="UTF-8" />
-      <title>Automated reports</title>
-      <link
-         rel="stylesheet"
-         href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
-         />
-      <style>
-         body {
-         font-family: sans-serif;
-         padding: 2rem;
-         background: #f9f9f9;
-         }
-         h1 {
-         font-size: 2rem;
-         }
-         .report {
-         margin-bottom: 3rem;
-         }
-      </style>
-   </head>
-   <body>
-      <h1>📊 Automatically generated reports by Mónica Perdomo Santana</h1>
-      <div id="contenedor-reportes"></div>
-      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-      <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-      <script>
-          const usuario = "MonicaPerdomoSantana";
-          const repositorio = "chinook-postgre-sql-report";
-          const rama = "gh-pages";
-          
-          async function cargarCSVs() {
-              const apiUrl = `https://api.github.com/repos/${usuario}/${repositorio}/contents/?ref=${rama}`;
-              const respuesta = await fetch(apiUrl);
-              const archivos = await respuesta.json();
-          
-              const contenedor = document.getElementById("contenedor-reportes");
-          
-              for (const item of archivos
-                      .filter((item) => item.name.endsWith(".csv"))
-                      .sort((a, b) => a.name.localeCompare(b.name))) {
-          
-                  const nombre = item.name.replace(".csv", "");
-                  const urlCSV = item.download_url;
-          
-                  const respuestaCSV = await fetch(urlCSV);
-                  const textoCSV = await respuestaCSV.text();
-                  const datos = Papa.parse(textoCSV, {
-                      header: true
-                  });
-          
-                  const seccion = document.createElement("div");
-                  seccion.className = "report";
-          
-                  const titulo = document.createElement("h2");
-                  titulo.textContent = `📁 ${nombre}`;
-                  seccion.appendChild(titulo);
-          
-                  const tabla = document.createElement("table");
-                  tabla.id = `tabla_${nombre}`;
-                  tabla.className = "display";
-                  seccion.appendChild(tabla);
-                  contenedor.appendChild(seccion);
-          
-                  const thead = document.createElement("thead");
-                  const tbody = document.createElement("tbody");
-          
-                  if (datos.data.length > 0) {
-                      const headers = Object.keys(datos.data[0]);
-          
-                      const filaCabecera = document.createElement("tr");
-                      headers.forEach((h) => {
-                          const th = document.createElement("th");
-                          th.textContent = h;
-                          filaCabecera.appendChild(th);
-                      });
-                      thead.appendChild(filaCabecera);
-          
-                      datos.data.forEach((row) => {
-                          const tr = document.createElement("tr");
-                          headers.forEach((h) => {
-                              const td = document.createElement("td");
-                              td.textContent = row[h];
-                              tr.appendChild(td);
-                          });
-                          tbody.appendChild(tr);
-                      });
-          
-                      tabla.appendChild(thead);
-                      tabla.appendChild(tbody);
-                      $(`#tabla_${nombre}`).DataTable();
-                  }
-              }
-          }
-          
-          cargarCSVs();
-      </script>
-   </body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Automated reports</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
+    />
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 2rem;
+        background: #f9f9f9;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .report {
+        margin-bottom: 3rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📊 Automatically generated reports by Mónica Perdomo Santana</h1>
+    <div id="contenedor-reportes"></div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+    <script>
+      const usuario = "MonicaPerdomoSantana";
+      const repositorio = "chinook-postgre-sql-report";
+      const rama = "gh-pages";
+
+      async function cargarCSVs() {
+        const apiUrl = `https://api.github.com/repos/${usuario}/${repositorio}/contents/?ref=${rama}`;
+        const respuesta = await fetch(apiUrl);
+        const archivos = await respuesta.json();
+
+        const contenedor = document.getElementById("contenedor-reportes");
+
+        archivos
+          .filter((item) => item.name.endsWith(".csv"))
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .forEach(async (item) => {
+            const nombre = item.name.replace(".csv", "");
+            const urlCSV = item.download_url;
+
+            const respuestaCSV = await fetch(urlCSV);
+            const textoCSV = await respuestaCSV.text();
+            const datos = Papa.parse(textoCSV, { header: true });
+
+            const seccion = document.createElement("div");
+            seccion.className = "report";
+
+            const titulo = document.createElement("h2");
+            titulo.textContent = `📁 ${nombre}`;
+            seccion.appendChild(titulo);
+
+            const tabla = document.createElement("table");
+            tabla.id = `tabla_${nombre}`;
+            tabla.className = "display";
+            seccion.appendChild(tabla);
+            contenedor.appendChild(seccion);
+
+            const thead = document.createElement("thead");
+            const tbody = document.createElement("tbody");
+
+            if (datos.data.length > 0) {
+              const headers = Object.keys(datos.data[0]);
+
+              const filaCabecera = document.createElement("tr");
+              headers.forEach((h) => {
+                const th = document.createElement("th");
+                th.textContent = h;
+                filaCabecera.appendChild(th);
+              });
+              thead.appendChild(filaCabecera);
+
+              datos.data.forEach((row) => {
+                const tr = document.createElement("tr");
+                headers.forEach((h) => {
+                  const td = document.createElement("td");
+                  td.textContent = row[h];
+                  tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+              });
+
+              tabla.appendChild(thead);
+              tabla.appendChild(tbody);
+              $(`#tabla_${nombre}`).DataTable();
+            }
+          });
+      }
+
+      cargarCSVs();
+    </script>
+  </body>
 </html>
